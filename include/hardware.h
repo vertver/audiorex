@@ -6,6 +6,21 @@
 #include <list>
 #include <map>
 #include <memory>
+#include  <unordered_map>
+
+#if defined(_WIN32) || defined(_WIN64)
+#ifdef DLL_PLATFORM
+#ifdef LIB_EXPORTS
+#define AREX_API __declspec(dllexport)
+#else
+#define AREX_API __declspec(dllimport)
+#endif
+#else 
+#define AREX_API
+#endif
+#else
+#define AREX_API
+#endif
 
 #define MA_NO_DSOUND
 #define MA_NO_WINMM
@@ -13,14 +28,19 @@
 #include "stb_vorbis.c"
 #include "miniaudio.h"
 
+#define DEVICE_FORMAT           ma_format_f32
+#define DEVICE_CHANNELS         2
+#define DEVICE_SAMPLE_RATE      48000
+#define PCM_FRAME_CHUNK_SIZE    1024
+
 namespace arex {
-	class audio_callback {
+	class AREX_API audio_callback {
 	public:
 		virtual ~audio_callback() {}
 		virtual void process(void* pOutput, void* pInput, int frames_count) = 0;
 	};
 
-	class audio_device_format {
+	class AREX_API audio_device_format {
 	private:
 		int device_frames_count = 0;
 		int device_sample_rate = 0;
@@ -39,7 +59,7 @@ namespace arex {
 		int channels() { return device_channels; }
 	};
 
-	class audio_device_description {
+	class AREX_API audio_device_description {
 	private:
 		int device_id = 0;
 		std::string device_uuid;
@@ -55,7 +75,7 @@ namespace arex {
 		audio_device_format& format() { return device_format; }
 	};
 
-	class audio_hardware {
+	class AREX_API audio_hardware {
 	private:
 		std::shared_ptr<audio_callback> ringbuffer_callback;
 		ma_context context = {};
@@ -82,4 +102,9 @@ namespace arex {
 
 		std::list<audio_device_description>& device_list();
 	};
+
+
+	inline audio_device_format get_default_format() {
+		return audio_device_format(PCM_FRAME_CHUNK_SIZE, DEVICE_SAMPLE_RATE, 32, DEVICE_CHANNELS);
+	}
 }

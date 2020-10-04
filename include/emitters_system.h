@@ -3,7 +3,7 @@
 #include "hardware.h"
 
 namespace arex {
-	class vec3 {
+	class AREX_API vec3 {
 	private:
 		float coord[3] = {};
 
@@ -40,7 +40,7 @@ namespace arex {
 		}
 	};
 
-	class vec4 {
+	class AREX_API vec4 {
 	private:
 		float coord[4] = {};
 
@@ -83,7 +83,7 @@ namespace arex {
 		}
 	};
 
-	class game_listener {
+	class AREX_API game_listener {
 	private:
 		vec3 listener_pos;
 		vec4 listener_rotation;
@@ -94,14 +94,14 @@ namespace arex {
 		vec4 rotation() { return listener_rotation; }
 	};
 
-	enum class emitter_status {
+	enum class AREX_API emitter_status {
 		emitter_stopped = 0,
 		emitter_paused,
 		emitter_playing,
 		emitter_looped
 	};
 
-	class game_source {
+	class AREX_API game_source {
 	private:
 		std::string source_path;
 		ma_decoder decoder;
@@ -126,7 +126,7 @@ namespace arex {
 		void set_format(audio_device_format device_format) { fmt = device_format; }
 		audio_device_format get_format() { return fmt; }
 
-		void set_position(size_t src_position) {}
+		bool set_position(size_t src_position) { return (ma_decoder_seek_to_pcm_frame(&decoder, src_position) == MA_SUCCESS); }
 		size_t get_position() { return 0; }
 
 		size_t process(float* pInput, float* pOutput, size_t frames) {
@@ -134,7 +134,7 @@ namespace arex {
 		}
 	};
 
-	class game_emitter {
+	class AREX_API game_emitter {
 	private:
 		std::shared_ptr<game_source> parent_ptr;
 		game_listener emitter_listener;
@@ -195,11 +195,11 @@ namespace arex {
 		}
 	};
 
-	class game_mixer {
+	class AREX_API game_mixer {
 	private:
 		audio_device_format fmt;
-		std::list<std::shared_ptr<game_emitter>> emitters_list;
-		std::list<std::shared_ptr<game_source>> sources_list;
+		std::unordered_map<std::string, std::shared_ptr<game_emitter>> emitters_list;
+		std::unordered_map<std::string, std::shared_ptr<game_source>> sources_list;
 		std::vector<float> input_buffer;
 		std::vector<float> output_buffer;
 
@@ -220,7 +220,7 @@ namespace arex {
 			reserve_bigger(frames_count);
 
 			for (auto elem : emitters_list) {
-				size_t ret = elem->process(input_buffer.data(), output_buffer.data(), frames_count);
+				size_t ret = elem.second->process(input_buffer.data(), output_buffer.data(), frames_count);
 				if (ret != -1) {
 					for (size_t i = 0; i < size_t(frames_count) * size_t(fmt.channels()); i++) {
 						((float*)(pOutput))[i] += output_buffer[i];
@@ -228,9 +228,19 @@ namespace arex {
 				}
 			}
 		}
+
+		bool add_emitter(std::string name, std::shared_ptr<game_emitter> emitter) {
+			if (name.empty()) return false;
+			emitters_list.insert({ name, emitter });
+		}
+
+		bool add_source(std::string name, std::shared_ptr<game_source> source) {
+			if (name.empty()) return false;
+			sources_list.insert({ name, source });
+		}
 	};
 
-	class emitters_callback : public audio_callback {
+	class AREX_API emitters_callback : public audio_callback {
 	private:
 		std::shared_ptr<game_mixer> parent_mixer;
 

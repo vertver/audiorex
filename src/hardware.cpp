@@ -3,11 +3,6 @@
 #include <codecvt>
 #include <thread>
 
-#define DEVICE_FORMAT           ma_format_f32
-#define DEVICE_CHANNELS         2
-#define DEVICE_SAMPLE_RATE      48000
-#define PCM_FRAME_CHUNK_SIZE    1024
-
 namespace arex {
 	static ma_pcm_rb g_rb;
 
@@ -130,7 +125,7 @@ namespace arex {
 			hardware_device_list.clear();
 			for (size_t i = 0; i < playbackDeviceCount; i++) {
 				auto format = audio_device_format(PCM_FRAME_CHUNK_SIZE, DEVICE_SAMPLE_RATE, 32, DEVICE_CHANNELS);
-				auto device_info = audio_device_description(i, convert_uuid_to_string(pPlaybackDeviceInfos->id), std::string(pPlaybackDeviceInfos->name), format);
+				auto device_info = audio_device_description(i, convert_uuid_to_string(pPlaybackDeviceInfos[i].id), std::string(pPlaybackDeviceInfos[i].name), format);
 				hardware_device_list.push_back(device_info);
 			}
 		}
