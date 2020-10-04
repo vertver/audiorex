@@ -136,6 +136,7 @@ namespace arex {
 
 	class AREX_API game_emitter {
 	private:
+		float volume = 0.5f;
 		std::shared_ptr<game_source> parent_ptr;
 		game_listener emitter_listener;
 		emitter_status status = emitter_status::emitter_stopped;
@@ -145,7 +146,9 @@ namespace arex {
 		}
 
 		void internal_process(float* pInput, float* pOutput, size_t frames) {
-
+			for (size_t i = 0; i < frames * get_format().channels(); i++) {
+				pOutput[i] *= volume;
+			}
 		}
 
 	public:
@@ -159,6 +162,9 @@ namespace arex {
 
 		vec3 get_position() { return emitter_listener.position(); }
 		vec4 get_rotation() { return emitter_listener.rotation(); }
+
+		void set_volume(float value) { volume = value; }
+		float get_volume() { return volume; }
 
 		void set_source_position(size_t src_position) {} 
 		size_t get_source_position() { return 0; }
