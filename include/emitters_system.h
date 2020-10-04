@@ -232,11 +232,18 @@ namespace arex {
 		bool add_emitter(std::string name, std::shared_ptr<game_emitter> emitter) {
 			if (name.empty()) return false;
 			emitters_list.insert({ name, emitter });
+			return true;
 		}
 
 		bool add_source(std::string name, std::shared_ptr<game_source> source) {
 			if (name.empty()) return false;
 			sources_list.insert({ name, source });
+			return true;
+		}
+
+		bool delete_source(std::string name) {
+			sources_list.erase(name);
+			return true;
 		}
 	};
 

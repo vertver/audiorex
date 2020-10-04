@@ -6,7 +6,7 @@
 #include <list>
 #include <map>
 #include <memory>
-#include  <unordered_map>
+#include <unordered_map>
 
 #if defined(_WIN32) || defined(_WIN64)
 #ifdef DLL_PLATFORM
@@ -24,9 +24,16 @@
 
 #define MA_NO_DSOUND
 #define MA_NO_WINMM
+
+#define MA_HAS_VORBIS
 #define STB_VORBIS_HEADER_ONLY
 #include "stb_vorbis.c"
+
+#define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
+#include "dr_flac.h"
+#include "dr_wav.h"
+#include "dr_mp3.h"
 
 #define DEVICE_FORMAT           ma_format_f32
 #define DEVICE_CHANNELS         2
