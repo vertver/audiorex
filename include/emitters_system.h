@@ -187,12 +187,12 @@ namespace arex {
 
 				if (status != emitter_status::emitter_looped) {
 					status = emitter_status::emitter_stopped;
-				}
-
-				return_frames = parent_ptr->process(pInput, pOutput, frames);
-				processed_frames += return_frames;
-				if (return_frames < frames) {
-					return -1;
+				} else {
+					return_frames = parent_ptr->process(pInput, pOutput, frames);
+					processed_frames += return_frames;
+					if (return_frames < frames) {
+						return -1;
+					}
 				}
 			}
 
