@@ -15,11 +15,6 @@ int main()
 		printf("%i device: %s\n", elem.id(), elem.name().c_str());
 	}
 
-// 	std::shared_ptr<arex::game_source> sound_source = std::make_shared<arex::game_source>(SOUND_TO_PLAY, arex::get_default_format());
-// 	std::shared_ptr<arex::game_emitter> sound_emitter = std::make_shared<arex::game_emitter>(sound_source);
-// 	sound_mixer->add_source("base_source", sound_source);
-// 	sound_mixer->add_emitter("base_emitter", sound_emitter);
-
 	std::shared_ptr<arex::game_source> sound_source_second = std::make_shared<arex::game_source>(SOUND_TO_PLAY_SECOND, arex::get_default_format());
 	std::shared_ptr<arex::game_emitter> sound_emitter_second = std::make_shared<arex::game_emitter>(sound_source_second);
 	sound_mixer->add_source("base_source2", sound_source_second);
